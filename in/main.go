@@ -1,7 +1,6 @@
 package main
 
 import (
-	"compress/gzip"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -29,39 +28,19 @@ func main() {
 		fatal("reading request", err)
 	}
 
-	// must use wget as net/http forces dynamic linking
-	//
-	// :(
-	wgetCmd := exec.Command("wget", "-O", "-", request.Source.URI)
-	wgetCmd.Stderr = os.Stderr
+	wgetPipe := exec.Command(
+		"sh",
+		"-c",
+		"wget -O - $1 | gunzip | tar -C $2 -xf -",
+		"sh", request.Source.URI, destination,
+	)
+	wgetPipe.Stdout = os.Stderr
+	wgetPipe.Stderr = os.Stderr
 
-	wgetOut, err := wgetCmd.StdoutPipe()
+	err = wgetPipe.Run()
 	if err != nil {
-		fatal("creating wget pipe", err)
-	}
-
-	err = wgetCmd.Start()
-	if err != nil {
-		fatal("starting download", err)
-	}
-
-	gunzip, err := gzip.NewReader(wgetOut)
-	if err != nil {
-		fatal("creating gzip reader", err)
-	}
-
-	tarCmd := exec.Command("tar", "-C", destination, "-xf", "-")
-	tarCmd.Stderr = os.Stderr
-	tarCmd.Stdin = gunzip
-
-	err = tarCmd.Run()
-	if err != nil {
-		fatal("starting tar", err)
-	}
-
-	err = wgetCmd.Wait()
-	if err != nil {
-		fatal("untarring", err)
+		println(err.Error())
+		os.Exit(1)
 	}
 
 	json.NewEncoder(os.Stdout).Encode(models.InResponse{})
