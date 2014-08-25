@@ -40,6 +40,11 @@ func main() {
 		fatal("creating wget pipe", err)
 	}
 
+	err = wgetCmd.Start()
+	if err != nil {
+		fatal("starting download", err)
+	}
+
 	gunzip, err := gzip.NewReader(wgetOut)
 	if err != nil {
 		fatal("creating gzip reader", err)
@@ -49,17 +54,12 @@ func main() {
 	tarCmd.Stderr = os.Stderr
 	tarCmd.Stdin = gunzip
 
-	err = tarCmd.Start()
+	err = tarCmd.Run()
 	if err != nil {
 		fatal("starting tar", err)
 	}
 
-	err = wgetCmd.Run()
-	if err != nil {
-		fatal("closing tar stream", err)
-	}
-
-	err = tarCmd.Wait()
+	err = wgetCmd.Wait()
 	if err != nil {
 		fatal("untarring", err)
 	}
