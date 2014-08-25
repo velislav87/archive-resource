@@ -3,12 +3,9 @@ package main
 import (
 	"compress/gzip"
 	"encoding/json"
-	"io"
-	"net/http"
 	"os"
 	"os/exec"
 
-	"github.com/cheggaaa/pb"
 	"github.com/concourse/archive-resource/models"
 )
 
@@ -32,39 +29,32 @@ func main() {
 		fatal("reading request", err)
 	}
 
+	// must use wget as net/http forces dynamic linking
+	//
+	// :(
+	wgetCmd := exec.Command("wget", "-O", "-", request.Source.URI)
+	wgetCmd.Stderr = os.Stderr
+
+	wgetOut, err := wgetCmd.StdoutPipe()
+	if err != nil {
+		fatal("creating wget pipe", err)
+	}
+
+	gunzip, err := gzip.NewReader(wgetOut)
+	if err != nil {
+		fatal("creating gzip reader", err)
+	}
+
 	tarCmd := exec.Command("tar", "-C", destination, "-xf", "-")
 	tarCmd.Stderr = os.Stderr
-
-	tarIn, err := tarCmd.StdinPipe()
-	if err != nil {
-		fatal("creating tar pipe", err)
-	}
+	tarCmd.Stdin = gunzip
 
 	err = tarCmd.Start()
 	if err != nil {
 		fatal("starting tar", err)
 	}
 
-	resp, err := http.Get(request.Source.URI)
-	if err != nil {
-		fatal("requesting uri", err)
-	}
-
-	bar := pb.New(int(resp.ContentLength)).SetUnits(pb.U_BYTES)
-
-	bar.Start()
-
-	gz, err := gzip.NewReader(resp.Body)
-	if err != nil {
-		fatal("unzipping", err)
-	}
-
-	_, err = io.Copy(io.MultiWriter(tarIn, bar), gz)
-	if err != nil {
-		fatal("downloading", err)
-	}
-
-	err = tarIn.Close()
+	err = wgetCmd.Run()
 	if err != nil {
 		fatal("closing tar stream", err)
 	}
