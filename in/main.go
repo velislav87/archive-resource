@@ -65,7 +65,7 @@ func main() {
 	wgetPipe := exec.Command(
 		"sh",
 		"-c",
-		"wget --header $3 -O - $1 | gunzip | tar -C $2 -xf -",
+		"wget --header \"$3\" -O - \"$1\" | gunzip | tar -C \"$2\" -xf -",
 		"sh", sourceURL.String(), destination, authHeader,
 	)
 
