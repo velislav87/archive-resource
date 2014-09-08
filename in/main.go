@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"os"
 	"os/exec"
@@ -41,24 +39,7 @@ func main() {
 	// so convert it to the header format ourselves
 	authHeader := "Authorization: "
 	if sourceURL.User != nil {
-		buf := new(bytes.Buffer)
-
-		encoder := base64.NewEncoder(base64.StdEncoding, buf)
-
-		_, err := encoder.Write([]byte(sourceURL.User.Username()))
-		if err != nil {
-			fatal("encoding username", err)
-		}
-
-		if password, hasPassword := sourceURL.User.Password(); hasPassword {
-			_, err := fmt.Fprintf(encoder, ":%s", password)
-			if err != nil {
-				fatal("encoding password", err)
-			}
-		}
-
-		authHeader += "Basic " + buf.String()
-
+		authHeader += "Basic " + basicAuth(sourceURL.User)
 		sourceURL.User = nil
 	}
 
@@ -84,4 +65,10 @@ func main() {
 func fatal(doing string, err error) {
 	println("error " + doing + ": " + err.Error())
 	os.Exit(1)
+}
+
+func basicAuth(user *url.Userinfo) string {
+	username := user.Username()
+	password, _ := user.Password()
+	return base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
 }
