@@ -1,7 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 
@@ -28,12 +32,43 @@ func main() {
 		fatal("reading request", err)
 	}
 
+	sourceURL, err := url.Parse(request.Source.URI)
+	if err != nil {
+		fatal("parsing uri", err)
+	}
+
+	// busybox's wget does not support basic auth in the uri,
+	// so convert it to the header format ourselves
+	authHeader := "Authorization: "
+	if sourceURL.User != nil {
+		buf := new(bytes.Buffer)
+
+		encoder := base64.NewEncoder(base64.StdEncoding, buf)
+
+		_, err := encoder.Write([]byte(sourceURL.User.Username()))
+		if err != nil {
+			fatal("encoding username", err)
+		}
+
+		if password, hasPassword := sourceURL.User.Password(); hasPassword {
+			_, err := fmt.Fprintf(encoder, ":%s", password)
+			if err != nil {
+				fatal("encoding password", err)
+			}
+		}
+
+		authHeader += "Basic " + buf.String()
+
+		sourceURL.User = nil
+	}
+
 	wgetPipe := exec.Command(
 		"sh",
 		"-c",
-		"wget -O - $1 | gunzip | tar -C $2 -xf -",
-		"sh", request.Source.URI, destination,
+		"wget --header $3 -O - $1 | gunzip | tar -C $2 -xf -",
+		"sh", sourceURL.String(), destination, authHeader,
 	)
+
 	wgetPipe.Stdout = os.Stderr
 	wgetPipe.Stderr = os.Stderr
 
