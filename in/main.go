@@ -39,7 +39,7 @@ func main() {
 	// so convert it to the header format ourselves
 	authHeader := "Authorization: "
 	if sourceURL.User != nil {
-		authHeader += "Basic " + basicAuth(sourceURL.User)
+		authHeader += basicAuth(sourceURL.User)
 		sourceURL.User = nil
 	}
 
@@ -70,5 +70,5 @@ func fatal(doing string, err error) {
 func basicAuth(user *url.Userinfo) string {
 	username := user.Username()
 	password, _ := user.Password()
-	return base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
+	return "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
 }
