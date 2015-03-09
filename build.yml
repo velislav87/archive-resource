@@ -3,4 +3,4 @@ platform: linux
 image: docker:///mischief/docker-golang
 
 run:
-  path: archive-resource/scripts/test
+  path: scripts/test
