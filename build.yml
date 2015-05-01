@@ -2,5 +2,9 @@
 platform: linux
 image: docker:///mischief/docker-golang
 
+inputs:
+- name: archive-resource
+  path: .
+
 run:
   path: scripts/test
