@@ -4,7 +4,7 @@ image: docker:///mischief/docker-golang
 
 inputs:
 - name: archive-resource
-  path: .
+  path: gopath/src/github.com/concourse/archive-resource
 
 run:
-  path: scripts/test
+  path: gopath/src/github.com/concourse/archive-resource/scripts/test
