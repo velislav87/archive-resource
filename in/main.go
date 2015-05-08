@@ -45,7 +45,7 @@ func main() {
 	curlPipe := exec.Command(
 		"sh",
 		"-c",
-		"curl -H \"$3\" \"$1\" | gunzip | tar -C \"$2\" -xf -",
+		"curl -k -H \"$3\" \"$1\" | gunzip | tar -C \"$2\" -xf -",
 		"sh", sourceURL.String(), destination, authHeader,
 	)
 
