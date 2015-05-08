@@ -35,25 +35,24 @@ func main() {
 		fatal("parsing uri", err)
 	}
 
-	// busybox's wget does not support basic auth in the uri,
-	// so convert it to the header format ourselves
+	// convert basic auth to header to prevent shell escaping weirdness
 	authHeader := "Authorization: "
 	if sourceURL.User != nil {
 		authHeader += basicAuth(sourceURL.User)
 		sourceURL.User = nil
 	}
 
-	wgetPipe := exec.Command(
+	curlPipe := exec.Command(
 		"sh",
 		"-c",
-		"wget --header \"$3\" -O - \"$1\" | gunzip | tar -C \"$2\" -xf -",
+		"curl -H \"$3\" \"$1\" | gunzip | tar -C \"$2\" -xf -",
 		"sh", sourceURL.String(), destination, authHeader,
 	)
 
-	wgetPipe.Stdout = os.Stderr
-	wgetPipe.Stderr = os.Stderr
+	curlPipe.Stdout = os.Stderr
+	curlPipe.Stderr = os.Stderr
 
-	err = wgetPipe.Run()
+	err = curlPipe.Run()
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)
