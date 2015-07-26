@@ -2,6 +2,14 @@
 
 Simply downloads and extracts an archive to the destination.
 
+**NOTE**: This resource is only intended for use in `fly execute` (it's how
+your inputs get uploaded). It won't work in a pipeline because `check` never
+yields any valid versions. This is because a download URL is not enough to
+continuously integrate with something, since the endpoint isn't versioned.
+You probably want the [S3 resource](https://github.com/concourse/s3-resource)
+or the [GitHub Release
+resource](https://github.com/concourse/github-release-resource) instead.
+
 ## Source Configuration
 
 * `uri`: *Required.* The location of the file to download.
