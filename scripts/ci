@@ -13,4 +13,4 @@ cd $GOPATH/src/github.com/concourse/archive-resource
 make
 
 cd ..
-mv archive-resource $ROOT/build-root
+cp -a archive-resource $ROOT/build-root
