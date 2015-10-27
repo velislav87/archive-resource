@@ -35,12 +35,7 @@ func main() {
 		fatal("parsing uri", err)
 	}
 
-	// convert basic auth to header to prevent shell escaping weirdness
-	authHeader := "Authorization: "
-	if sourceURL.User != nil {
-		authHeader += basicAuth(sourceURL.User)
-		sourceURL.User = nil
-	}
+	authHeader := "Authorization: " + request.Source.Authorization
 
 	curlPipe := exec.Command(
 		"sh",
