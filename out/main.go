@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/concourse/archive-resource/models"
 )
@@ -33,14 +32,14 @@ func main() {
 
 	authHeader := "Authorization: " + request.Source.Authorization
 
-	directoriesToInclude := request.Params.DirectoriesToInclude
+	directory := request.Params.Directory
 	curlPipe := exec.Command(
 		"sh",
 		"-c",
 		`tar -C "$1" -cf - $2 | gzip | curl -H "$3" -X PUT "$3" -T -`,
 		"sh",
 		sourceDirectory,
-		strings.Join(directoriesToInclude, " "),
+		directory,
 		sourceURL.String(),
 		authHeader,
 	)

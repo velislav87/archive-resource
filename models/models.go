@@ -10,7 +10,7 @@ type OutRequest struct {
 }
 
 type OutParams struct {
-	DirectoriesToInclude []string `json:"dirs"`
+	Directory string `json:"directory"`
 }
 
 type Source struct {
