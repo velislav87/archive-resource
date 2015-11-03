@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/concourse/archive-resource/models"
 )
@@ -36,10 +37,9 @@ func main() {
 	curlPipe := exec.Command(
 		"sh",
 		"-c",
-		`tar -C "$1" -cf - $2 | gzip | curl -H "$3" -X PUT "$3" -T -`,
+		`tar -C "$1" -cf - . | gzip | curl -H "$3" -X PUT "$2" -T -`,
 		"sh",
-		sourceDirectory,
-		directory,
+		filepath.Join(sourceDirectory, directory),
 		sourceURL.String(),
 		authHeader,
 	)
