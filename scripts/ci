@@ -8,9 +8,10 @@ ROOT=$PWD
 export GOPATH=$PWD/gopath
 export PATH=$GOPATH/bin:$PATH
 
+BUILD_DIR=$PWD/built-resource
+
 cd $GOPATH/src/github.com/concourse/archive-resource
 
 make
 
-cd ..
-cp -a archive-resource $ROOT/build-root
+cp -a assets/ Dockerfile $BUILD_DIR

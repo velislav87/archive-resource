@@ -6,5 +6,8 @@ inputs:
 - name: archive-resource
   path: gopath/src/github.com/concourse/archive-resource
 
+outputs:
+- name: built-resource
+
 run:
   path: gopath/src/github.com/concourse/archive-resource/scripts/ci

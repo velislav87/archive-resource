@@ -1,10 +1,13 @@
-all: built-in built-check built-out
+all: assets/in assets/check assets/out
 
-built-in: in/main.go
-	GOARCH=amd64 GOOS=linux go build -o built-in in/main.go
+assets:
+	mkdir assets
 
-built-out: out/main.go
-	GOARCH=amd64 GOOS=linux go build -o built-out out/main.go
+assets/in: assets in/main.go
+	GOARCH=amd64 GOOS=linux go build -o assets/in in/main.go
 
-built-check: check/main.go
-	GOARCH=amd64 GOOS=linux go build -o built-check check/main.go
+assets/out: assets out/main.go
+	GOARCH=amd64 GOOS=linux go build -o assets/out out/main.go
+
+assets/check: assets check/main.go
+	GOARCH=amd64 GOOS=linux go build -o assets/check check/main.go
