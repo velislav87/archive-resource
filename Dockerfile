@@ -1,2 +1,2 @@
-FROM concourse/busyboxplus:curl-tar
+FROM concourse/buildroot:curl-tar
 ADD assets/ /opt/resource/
