@@ -37,7 +37,7 @@ func main() {
 	curlPipe := exec.Command(
 		"sh",
 		"-c",
-		`tar -C "$1" -cf - . | gzip | curl -H "$3" -X PUT "$2" -T -`,
+		`tar -C "$1" -czf - . | curl -H "$3" -X PUT "$2" -T -`,
 		"sh",
 		filepath.Join(sourceDirectory, directory),
 		sourceURL.String(),
