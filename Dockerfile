@@ -1,2 +1,3 @@
-FROM concourse/buildroot:curl-tar
+FROM concourse/buildroot:curl
+
 ADD assets/ /opt/resource/
