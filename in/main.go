@@ -40,7 +40,7 @@ func main() {
 	curlPipe := exec.Command(
 		"sh",
 		"-c",
-		"curl --location-trusted -k -H \"$3\" \"$1\" | tar -C \"$2\" -zxf -",
+		"curl --location-trusted -k -H \"$3\" \"$1\" | tar --warning=no-unknown-keyword -C \"$2\" -zxf  -",
 		"sh", sourceURL.String(), destination, authHeader,
 	)
 
