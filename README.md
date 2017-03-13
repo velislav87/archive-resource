@@ -1,5 +1,8 @@
 # Archive Resource
 
+# Forked to introcude versioning functionality based on the url endpoint
+# Similar to the FTP resource type
+
 Simply downloads and extracts an archive to the destination.
 
 **NOTE**: This resource is only intended for use in `fly execute` (it's how
